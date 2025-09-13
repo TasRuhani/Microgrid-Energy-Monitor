@@ -3,8 +3,8 @@ import React from 'react';
 import { Card, Button } from '@/components/ui';
 
 interface HomePageProps {
-  data: { voltage: string; current: string; power: string; energy: string; efficiency: string; pf: string };
-  metricStatus: { voltage: 'ok' | 'warning'; powerFactor: 'ok' | 'warning'; power: 'ok' | 'warning' };
+  data: { voltage: string; current: string; power: string; energy: string; efficiency: string; pf: string; apparentPower: string; reactivePower: string; };
+  metricStatus: { voltage: 'ok' | 'warning'; powerFactor: 'ok' | 'warning'; power: 'ok' | 'warning'; apparentPower: 'ok' | 'warning'; reactivePower: 'ok' | 'warning'; };
   onCardClick: (metric: { title: string; value: string; unit: string }) => void;
   onResetEnergy: () => void;
   resetStatus: string;
@@ -16,57 +16,75 @@ const StatusLight = ({ status }: { status: 'ok' | 'warning' }) => (
 
 export const HomePage = ({ data, metricStatus, onCardClick, onResetEnergy, resetStatus }: HomePageProps) => (
   <>
-    <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-3 gap-4 mb-8">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       <div onClick={() => onCardClick({ title: 'Voltage', value: data.voltage, unit: 'V' })} className="cursor-pointer relative">
-        <Card>
+        <Card className="h-56 w-full">
           <StatusLight status={metricStatus.voltage} />
-          <h2 className="text-lg mb-6 font-medium text-slate-400">Voltage</h2>
-          <p className="text-3xl font-bold text-blue-300">
+          <h2 className="text-lg font-medium text-slate-400">Voltage</h2>
+          <p className="text-3xl mt-8 font-bold text-blue-300">
             {data.voltage} <span className="text-base font-normal text-slate-500">V</span>
           </p>
         </Card>
       </div>
       <div onClick={() => onCardClick({ title: 'Current', value: data.current, unit: 'A' })} className="cursor-pointer relative">
-        <Card>
+        <Card className="h-56 w-full">
           <StatusLight status={'ok'} />
-          <h2 className="text-l mb-6 font-medium text-slate-400">Current</h2>
-          <p className="text-3xl font-bold text-blue-300">
+          <h2 className="text-lg font-medium text-slate-400">Current</h2>
+          <p className="text-3xl mt-8 font-bold text-blue-300">
             {data.current} <span className="text-base font-normal text-slate-500">A</span>
           </p>
         </Card>
       </div>
       <div onClick={() => onCardClick({ title: 'Real Power', value: data.power, unit: 'W' })} className="cursor-pointer relative">
-        <Card>
+        <Card className="h-56 w-full">
           <StatusLight status={metricStatus.power} />
-          <h2 className="text-lg mb-6 font-medium text-slate-400">Real Power</h2>
-          <p className="text-3xl font-bold text-blue-300">
+          <h2 className="text-lg font-medium text-slate-400">Real Power</h2>
+          <p className="text-3xl mt-8 font-bold text-blue-300">
             {data.power} <span className="text-base font-normal text-slate-500">W</span>
           </p>
         </Card>
       </div>
-      <div onClick={() => onCardClick({ title: 'Total Energy', value: data.energy, unit: 'Wh' })} className="cursor-pointer relative">
-        <Card>
-          <StatusLight status={'ok'} />
-          <h2 className="text-lg mb-6 font-medium text-slate-400">Total Energy</h2>
-          <p className="text-3xl font-bold text-blue-300">
-            {data.energy} <span className="text-base font-normal text-slate-500">Wh</span>
+      <div onClick={() => onCardClick({ title: 'Apparent Power', value: data.apparentPower, unit: 'VA' })} className="cursor-pointer relative">
+        <Card className="h-56 w-full">
+          <StatusLight status={metricStatus.apparentPower} />
+          <h2 className="text-lg font-medium text-slate-400">Apparent Power</h2>
+          <p className="text-3xl mt-2 font-bold text-blue-300">
+            {data.apparentPower} <span className="text-base font-normal text-slate-500">VA</span>
+          </p>
+        </Card>
+      </div>
+      <div onClick={() => onCardClick({ title: 'Reactive Power', value: data.reactivePower, unit: 'VAR' })} className="cursor-pointer relative">
+        <Card className="h-56 w-full">
+          <StatusLight status={metricStatus.reactivePower} />
+          <h2 className="text-lg font-medium text-slate-400">Reactive Power</h2>
+          <p className="text-3xl mt-6 font-bold text-blue-300">
+            {data.reactivePower} <span className="text-base font-normal text-slate-500">VAR</span>
           </p>
         </Card>
       </div>
       <div onClick={() => onCardClick({ title: 'Power Factor', value: data.pf, unit: '' })} className="cursor-pointer relative">
-        <Card>
+        <Card className="h-56 w-full">
           <StatusLight status={metricStatus.powerFactor} />
-          <h2 className="text-lg mb-6 font-medium text-slate-400">Power Factor</h2>
-          <p className="text-3xl font-bold text-blue-300">
+          <h2 className="text-lg font-medium text-slate-400">Power Factor</h2>
+          <p className="text-3xl mt-6 font-bold text-blue-300">
             {data.pf}
           </p>
         </Card>
       </div>
-      <div onClick={() => onCardClick({ title: 'Efficiency', value: data.efficiency, unit: '%' })} className="cursor-pointer relative">
-        <Card>
+      <div onClick={() => onCardClick({ title: 'Total Energy', value: data.energy, unit: 'Wh' })} className="cursor-pointer relative">
+        <Card className="h-56 w-full">
           <StatusLight status={'ok'} />
-          <h2 className="text-lg mb-6 font-medium text-slate-400">MicroGrid Efficiency</h2>
-          <p className="text-3xl font-bold text-blue-300">
+          <h2 className="text-lg font-medium text-slate-400">Total Energy</h2>
+          <p className="text-3xl mt-6 font-bold text-blue-300">
+            {data.energy} <span className="text-base font-normal text-slate-500">Wh</span>
+          </p>
+        </Card>
+      </div>
+      <div onClick={() => onCardClick({ title: 'Efficiency', value: data.efficiency, unit: '%' })} className="cursor-pointer relative">
+        <Card className="h-56 w-full">
+          <StatusLight status={'ok'} />
+          <h2 className="text-lg font-medium text-slate-400">Microgrid Efficiency</h2>
+          <p className="text-3xl mt-6 font-bold text-blue-300">
             {data.efficiency} <span className="text-base font-normal text-slate-500">%</span>
           </p>
         </Card>

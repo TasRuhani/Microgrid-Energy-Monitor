@@ -12,12 +12,16 @@ interface MetricData {
   energy: string;
   efficiency: string;
   pf: string;
+  apparentPower: string;
+  reactivePower: string;
 }
 
 interface MetricStatus {
   voltage: 'ok' | 'warning';
   powerFactor: 'ok' | 'warning';
   power: 'ok' | 'warning';
+  apparentPower: 'ok' | 'warning';
+  reactivePower: 'ok' | 'warning';
 }
 
 export default function App() {
@@ -28,11 +32,15 @@ export default function App() {
     energy: '0',
     efficiency: '0',
     pf: '0',
+    apparentPower: '0',
+    reactivePower: '0',
   });
   const [metricStatus, setMetricStatus] = useState<MetricStatus>({
     voltage: 'ok',
     powerFactor: 'ok',
     power: 'ok',
+    apparentPower: 'ok',
+    reactivePower: 'ok',
   });
   const [resetStatus, setResetStatus] = useState('');
   const [isOnline, setIsOnline] = useState(typeof window !== 'undefined' ? navigator.onLine : true);
@@ -40,7 +48,7 @@ export default function App() {
   const [selectedMetric, setSelectedMetric] = useState<{ title: string, value: string, unit: string } | null>(null);
   const [showLowEnergyWarning, setShowLowEnergyWarning] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
-  // const [showConfig, setShowConfig] = useState(typeof window !== 'undefined' ? !navigator.onLine || !localStorage.getItem('esp32Ip') : true);
+  // const [showConfig, setShowConfig] = useState(typeof window !== 'undefined' ? !navigator.onLine || !localStorage.getItem('esp32Ip') : true);
   const [esp32Ip, setEsp32Ip] = useState(typeof window !== 'undefined' ? localStorage.getItem('esp32Ip') || '' : '');
   const [ssid, setSsid] = useState(typeof window !== 'undefined' ? localStorage.getItem('ssid') || '' : '');
   const [password, setPassword] = useState(typeof window !== 'undefined' ? localStorage.getItem('password') || '' : '');
@@ -82,11 +90,7 @@ export default function App() {
   }, []);
 
   const fetchData = useCallback(async () => {
-    if (!isOnline || !esp32Ip) {
-      // Differentiate between low energy and no connection
-      setShowLowEnergyWarning(false); // Reset to prevent false warnings
-      return;
-    }
+    if (!isOnline || !esp32Ip) return;
     try {
       const response = await fetch(`${getBaseUrl()}/data`);
       if (!response.ok) {
@@ -97,6 +101,8 @@ export default function App() {
       const newEnergy = (parseFloat(jsonData.energy) * 1000).toFixed(0);
       const newEfficiency = (parseFloat(newEnergy) > 0 ? (parseFloat(jsonData.power) / parseFloat(newEnergy)) * 100 : 0).toFixed(2);
       const newPf = parseFloat(jsonData.pf).toFixed(2);
+      const newApparentPower = parseFloat(jsonData.apparentPower).toFixed(1);
+      const newReactivePower = parseFloat(jsonData.reactivePower).toFixed(1);
 
       setData({
         voltage: parseFloat(jsonData.voltage).toFixed(1),
@@ -105,6 +111,8 @@ export default function App() {
         energy: newEnergy,
         efficiency: newEfficiency,
         pf: newPf,
+        apparentPower: newApparentPower,
+        reactivePower: newReactivePower,
       });
 
       // Smart Alerts Logic
@@ -113,7 +121,7 @@ export default function App() {
       const highVoltageThreshold = 250;
       const lowPfThreshold = 0.75;
       
-      const newMetricStatus: MetricStatus = { voltage: 'ok', powerFactor: 'ok', power: 'ok' };
+      const newMetricStatus: MetricStatus = { voltage: 'ok', powerFactor: 'ok', power: 'ok', apparentPower: 'ok', reactivePower: 'ok' };
       
       if (parseFloat(newPower) < lowEnergyThreshold && parseFloat(newPower) > 0) {
         newMetricStatus.power = 'warning';
@@ -127,16 +135,26 @@ export default function App() {
         newMetricStatus.powerFactor = 'warning';
       }
       
+      // I've also added a check for apparent power, a large difference between
+      // apparent and real power could indicate an issue.
+      if (parseFloat(newApparentPower) > (parseFloat(newPower) * 1.5)) {
+        newMetricStatus.apparentPower = 'warning';
+      }
+      
+      // Similarly for reactive power, high values indicate a poor power factor
+      if (parseFloat(newReactivePower) > 100) {
+        newMetricStatus.reactivePower = 'warning';
+      }
+      
       setMetricStatus(newMetricStatus);
       setShowLowEnergyWarning(newMetricStatus.power === 'warning');
 
     } catch (error) {
       console.error("Could not fetch data:", error);
-      // Display a connection error instead of a low energy warning
       setShowLowEnergyWarning(false);
       setResetStatus('Connection failed. Check IP address and Wi-Fi.');
       setTimeout(() => setResetStatus(''), 5000);
-      setMetricStatus({ voltage: 'warning', powerFactor: 'warning', power: 'warning' });
+      setMetricStatus({ voltage: 'warning', powerFactor: 'warning', power: 'warning', apparentPower: 'warning', reactivePower: 'warning' });
     }
   }, [isOnline, esp32Ip]);
 
@@ -228,7 +246,7 @@ export default function App() {
     <div className="min-h-screen text-white p-4 font-sans">
       <div className="container mx-auto max-w-4xl py-8">
         <div className="cursor-pointer" onClick={() => setCurrentPage('home')}>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mt-16 mb-20 text-blue-400 font-michroma">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mt-8 mb-14 text-blue-400 font-michroma">
             Renewable Energy Monitor
           </h1>
         </div>
