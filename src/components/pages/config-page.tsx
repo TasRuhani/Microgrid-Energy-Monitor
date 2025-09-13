@@ -19,7 +19,7 @@ export const ConfigPage = ({ esp32Ip, setEsp32Ip, ssid, setSsid, password, setPa
       <Label htmlFor="ip">ESP32 IP Address</Label>
       <Input
         id="ip"
-        placeholder="e.g., 192.168.1.123"
+        placeholder="10.245.117.161"
         value={esp32Ip}
         onChange={(e) => setEsp32Ip(e.target.value)}
       />
