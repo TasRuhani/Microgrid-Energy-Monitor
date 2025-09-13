@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { HomePage } from '@/components/pages/home-page';
 import { DetailsPage } from '@/components/pages/details-page';
 import { ConfigPage } from '@/components/pages/config-page';
+import { Button } from '@/components/ui/button';
 
 interface MetricData {
   voltage: string;
@@ -38,8 +39,8 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [selectedMetric, setSelectedMetric] = useState<{ title: string, value: string, unit: string } | null>(null);
   const [showLowEnergyWarning, setShowLowEnergyWarning] = useState(false);
-  // const [showConfig, setShowConfig] = useState(false);
-  const [showConfig, setShowConfig] = useState(typeof window !== 'undefined' ? !navigator.onLine || !localStorage.getItem('esp32Ip') : true);
+  const [showConfig, setShowConfig] = useState(false);
+  // const [showConfig, setShowConfig] = useState(typeof window !== 'undefined' ? !navigator.onLine || !localStorage.getItem('esp32Ip') : true);
   const [esp32Ip, setEsp32Ip] = useState(typeof window !== 'undefined' ? localStorage.getItem('esp32Ip') || '' : '');
   const [ssid, setSsid] = useState(typeof window !== 'undefined' ? localStorage.getItem('ssid') || '' : '');
   const [password, setPassword] = useState(typeof window !== 'undefined' ? localStorage.getItem('password') || '' : '');
@@ -81,7 +82,11 @@ export default function App() {
   }, []);
 
   const fetchData = useCallback(async () => {
-    if (!isOnline || !esp32Ip) return;
+    if (!isOnline || !esp32Ip) {
+      // Differentiate between low energy and no connection
+      setShowLowEnergyWarning(false); // Reset to prevent false warnings
+      return;
+    }
     try {
       const response = await fetch(`${getBaseUrl()}/data`);
       if (!response.ok) {
@@ -127,7 +132,10 @@ export default function App() {
 
     } catch (error) {
       console.error("Could not fetch data:", error);
-      setShowLowEnergyWarning(true);
+      // Display a connection error instead of a low energy warning
+      setShowLowEnergyWarning(false);
+      setResetStatus('Connection failed. Check IP address and Wi-Fi.');
+      setTimeout(() => setResetStatus(''), 5000);
       setMetricStatus({ voltage: 'warning', powerFactor: 'warning', power: 'warning' });
     }
   }, [isOnline, esp32Ip]);
@@ -184,13 +192,20 @@ export default function App() {
     switch (currentPage) {
       case 'home':
         return (
-          <HomePage
-            data={data}
-            metricStatus={metricStatus}
-            onCardClick={handleCardClick}
-            onResetEnergy={handleResetEnergy}
-            resetStatus={resetStatus}
-          />
+          <>
+            <HomePage
+              data={data}
+              metricStatus={metricStatus}
+              onCardClick={handleCardClick}
+              onResetEnergy={handleResetEnergy}
+              resetStatus={resetStatus}
+            />
+            <div className="text-center mt-12">
+              <Button onClick={() => setShowConfig(true)} variant="primary" className="text-sm">
+                Configure Wi-Fi Connection
+              </Button>
+            </div>
+          </>
         );
       case 'details':
         if (selectedMetric) {
@@ -210,10 +225,10 @@ export default function App() {
   };
 
   return (
-    <div className="bg-slate-950 min-h-screen text-white p-4 font-sans">
+    <div className="min-h-screen text-white p-4 font-sans">
       <div className="container mx-auto max-w-4xl py-8">
         <div className="cursor-pointer" onClick={() => setCurrentPage('home')}>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 text-blue-400">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mt-16 mb-20 text-blue-400 font-michroma">
             Renewable Energy Monitor
           </h1>
         </div>
