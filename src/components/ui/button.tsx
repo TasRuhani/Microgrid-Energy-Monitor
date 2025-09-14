@@ -9,7 +9,7 @@ export const Button = ({ children, onClick, className, variant = 'default' }: { 
       variantClasses = 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-700';
       break;
     case 'destructive':
-      variantClasses = 'bg-red-600 hover:bg-red-700 focus:ring-red-500';
+      variantClasses = ' border-2 border-red-500 hover:bg-red-700 focus:ring-red-500';
       break;
     case 'ghost':
       variantClasses = 'bg-transparent text-slate-400 hover:bg-slate-700 focus:ring-slate-500';

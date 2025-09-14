@@ -16,7 +16,7 @@ const StatusLight = ({ status }: { status: 'ok' | 'warning' }) => (
 
 export const HomePage = ({ data, metricStatus, onCardClick, onResetEnergy, resetStatus }: HomePageProps) => (
   <>
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <div onClick={() => onCardClick({ title: 'Voltage', value: data.voltage, unit: 'V' })} className="cursor-pointer relative">
         <Card className="h-56 w-full">
           <StatusLight status={metricStatus.voltage} />
@@ -39,7 +39,7 @@ export const HomePage = ({ data, metricStatus, onCardClick, onResetEnergy, reset
         <Card className="h-56 w-full">
           <StatusLight status={metricStatus.power} />
           <h2 className="text-lg font-medium text-slate-400">Real Power</h2>
-          <p className="text-3xl mt-12 font-bold text-blue-300">
+          <p className="text-3xl mt-6 font-bold text-blue-300">
             {data.power} <span className="text-base font-normal text-slate-500">W</span>
           </p>
         </Card>

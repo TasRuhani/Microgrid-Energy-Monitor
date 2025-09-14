@@ -1,9 +1,10 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
-import { HomePage } from '@/components/pages/home-page';
-import { DetailsPage } from '@/components/pages/details-page';
-import { ConfigPage } from '@/components/pages/config-page';
-import { Button } from '@/components/ui/button';
+import { HomePage } from '../components/pages/home-page';
+import { DetailsPage } from '../components/pages/details-page';
+import { ConfigPage } from '../components/pages/config-page';
+import SolarPanelDashboard from './SolarPanelDashboard';
+import { Button } from '../components/ui/button';
 
 interface MetricData {
   voltage: string;
@@ -47,16 +48,16 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [selectedMetric, setSelectedMetric] = useState<{ title: string, value: string, unit: string } | null>(null);
   const [alerts, setAlerts] = useState<string[]>([]);
-  // const [showConfig, setShowConfig] = useState(false);
-  const [showConfig, setShowConfig] = useState(typeof window !== 'undefined' ? !navigator.onLine || !localStorage.getItem('esp32Ip') : true);
+  const [showConfig, setShowConfig] = useState(false);
+  // const [showConfig, setShowConfig] = useState(typeof window !== 'undefined' ? !navigator.onLine || !localStorage.getItem('esp32Ip') : true);
   const [esp32Ip, setEsp32Ip] = useState(typeof window !== 'undefined' ? localStorage.getItem('esp32Ip') || '' : '');
   const [ssid, setSsid] = useState(typeof window !== 'undefined' ? localStorage.getItem('ssid') || '' : '');
   const [password, setPassword] = useState(typeof window !== 'undefined' ? localStorage.getItem('password') || '' : '');
   const [dateRange, setDateRange] = useState('7d');
 
-const getBaseUrl = useCallback(() => {
+  const getBaseUrl = useCallback(() => {
     return `http://${esp32Ip}`;
-}, [esp32Ip]);
+  }, [esp32Ip]);
 
   const registerServiceWorker = () => {
     if ('serviceWorker' in navigator) {
@@ -233,7 +234,10 @@ const getBaseUrl = useCallback(() => {
               onResetEnergy={handleResetEnergy}
               resetStatus={resetStatus}
             />
-            <div className="text-center mt-12">
+            <div className="text-center mt-12 flex flex-col sm:flex-row justify-center gap-4">
+              <Button onClick={() => setCurrentPage('solar-panels')} variant="primary" className="text-sm">
+                View Solar Panels
+              </Button>
               <Button onClick={() => setShowConfig(true)} variant="primary" className="text-sm">
                 Configure Wi-Fi Connection
               </Button>
@@ -252,6 +256,8 @@ const getBaseUrl = useCallback(() => {
           );
         }
         return null;
+      case 'solar-panels':
+        return <SolarPanelDashboard />;
       default:
         return null;
     }
