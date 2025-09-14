@@ -159,8 +159,8 @@ export default function App() {
 
       // Smart Alerts Logic
       const lowEnergyThreshold = 0;
-      const lowVoltageThreshold = 150;
-      const highVoltageThreshold = 250;
+      const lowVoltageThreshold = 200;
+      const highVoltageThreshold = 260;
       const lowPfThreshold = 0.75;
 
       const newMetricStatus: MetricStatus = {
