@@ -169,7 +169,7 @@ const SolarPanelDashboard: React.FC<SolarPanelDashboardProps> = ({ onBack }) => 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6 font-sans flex flex-col items-center">
       <div className="container mx-auto max-w-6xl">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-center mb-12 mt-8 tracking-tight text-white shadow-text-neon">
+        <h1 className="text-4xl sm:text-5xl modern-heading font-bold text-center mb-12 mt-8 tracking-tight text-white shadow-text-neon">
           Solar Panel Monitor
         </h1>
 
