@@ -1,10 +1,10 @@
-'use client';
-import React, { useState, useEffect, useCallback } from 'react';
-import { HomePage } from '../components/pages/home-page';
-import { DetailsPage } from '../components/pages/details-page';
-import { ConfigPage } from '../components/pages/config-page';
-import SolarPanelDashboard from './SolarPanelDashboard';
-import { Button } from '../components/ui/button';
+"use client";
+import React, { useState, useEffect, useCallback } from "react";
+import { HomePage } from "../components/pages/home-page";
+import { DetailsPage } from "../components/pages/details-page";
+import { ConfigPage } from "../components/pages/config-page";
+import SolarPanelDashboard from "./SolarPanelDashboard";
+import { Button } from "../components/ui/button";
 
 interface MetricData {
   voltage: string;
@@ -55,11 +55,21 @@ export default function App() {
   } | null>(null);
   const [alerts, setAlerts] = useState<string[]>([]);
   // const [showConfig, setShowConfig] = useState(false);
-  const [showConfig, setShowConfig] = useState(typeof window !== 'undefined' ? !navigator.onLine || !localStorage.getItem('esp32Ip') : true);
-  const [esp32Ip, setEsp32Ip] = useState(typeof window !== 'undefined' ? localStorage.getItem('esp32Ip') || '' : '');
-  const [ssid, setSsid] = useState(typeof window !== 'undefined' ? localStorage.getItem('ssid') || '' : '');
-  const [password, setPassword] = useState(typeof window !== 'undefined' ? localStorage.getItem('password') || '' : '');
-  const [dateRange, setDateRange] = useState('7d');
+  const [showConfig, setShowConfig] = useState(
+    typeof window !== "undefined"
+      ? !navigator.onLine || !localStorage.getItem("esp32Ip")
+      : true
+  );
+  const [esp32Ip, setEsp32Ip] = useState(
+    typeof window !== "undefined" ? localStorage.getItem("esp32Ip") || "" : ""
+  );
+  const [ssid, setSsid] = useState(
+    typeof window !== "undefined" ? localStorage.getItem("ssid") || "" : ""
+  );
+  const [password, setPassword] = useState(
+    typeof window !== "undefined" ? localStorage.getItem("password") || "" : ""
+  );
+  const [dateRange, setDateRange] = useState("7d");
 
   const getBaseUrl = useCallback(() => {
     return `http://${esp32Ip}`;
@@ -285,11 +295,19 @@ export default function App() {
               onResetEnergy={handleResetEnergy}
               resetStatus={resetStatus}
             />
-            <div className="text-center mt-12 flex flex-col sm:flex-row justify-center gap-4">
-              <Button onClick={() => setCurrentPage('solar-panels')} variant="primary" className="text-sm">
+            <div className="text-center mt-12 flex flex-col sm:flex-row justify-center gap-24">
+              <Button
+                onClick={() => setCurrentPage("solar-panels")}
+                variant="primary"
+                className="text-sm w-full"
+              >
                 View Solar Panels
               </Button>
-              <Button onClick={() => setShowConfig(true)} variant="primary" className="text-sm">
+              <Button
+                onClick={() => setShowConfig(true)}
+                variant="primary"
+                className="text-sm w-full"
+              >
                 Configure Wi-Fi Connection
               </Button>
             </div>
@@ -307,8 +325,9 @@ export default function App() {
           );
         }
         return null;
-      case 'solar-panels':
-        return <SolarPanelDashboard />;
+      case "solar-panels":
+        return <SolarPanelDashboard onBack={() => setCurrentPage("home")} />;
+
       default:
         return null;
     }

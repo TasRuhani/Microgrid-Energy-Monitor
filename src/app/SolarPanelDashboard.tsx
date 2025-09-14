@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
 
 // Define the SVG icon components directly in the file
 interface IconProps {
@@ -71,38 +72,39 @@ interface Panel {
   isEnabled: boolean;
 }
 
+interface SolarPanelDashboardProps {
+  onBack: () => void;
+}
+
 // Helper function to generate a unique ID for each panel
 const generatePanelId = () => {
   return Math.random().toString(36).substring(2, 9);
 };
 
-const SolarPanelDashboard: React.FC = () => {
+const SolarPanelDashboard: React.FC<SolarPanelDashboardProps> = ({ onBack }) => {
   const [panels, setPanels] = useState<Panel[]>([]);
   const [selectedPanel, setSelectedPanel] = useState<Panel | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Function to create initial panel state
   const initializePanels = useCallback(() => {
     const initialPanels: Panel[] = Array.from({ length: 40 }, () => ({
       id: generatePanelId(),
-      status: Math.random() < 0.2 ? 'warning' : 'ok', // 20% chance of a warning state
+      status: Math.random() < 0.2 ? 'warning' : 'ok',
       isEnabled: true,
     }));
     setPanels(initialPanels);
-  }, []); // Note: the dependency array is now empty because panelCount is no longer a state variable
+  }, []);
 
   useEffect(() => {
     initializePanels();
   }, [initializePanels]);
 
-  // Handle panel click to show modal
   const handlePanelClick = (panel: Panel) => {
     setSelectedPanel(panel);
     setShowModal(true);
   };
 
-  // Handle toggling the panel status (on/off)
   const togglePanelStatus = () => {
     if (!selectedPanel) return;
 
@@ -113,7 +115,7 @@ const SolarPanelDashboard: React.FC = () => {
       ));
       setLoading(false);
       setShowModal(false);
-    }, 1000); // Simulate network latency
+    }, 1000);
   };
 
   const getStatusColor = (status: string, isEnabled: boolean) => {
@@ -171,6 +173,12 @@ const SolarPanelDashboard: React.FC = () => {
           Solar Panel Monitor
         </h1>
 
+        <div className="w-full hidden sm:flex justify-start mb-6">
+          <Button onClick={onBack} variant="ghost" className='hidden sm:flex border-2 border-blue-900 text-white'>
+            &larr; Back to Dashboard
+          </Button>
+        </div>
+
         <div className="grid grid-cols-4 sm:grid-cols-8 gap-4 justify-items-center">
           {panels.map((panel, index) => (
             <div
@@ -188,6 +196,11 @@ const SolarPanelDashboard: React.FC = () => {
             </div>
           ))}
         </div>
+        <div className="w-full flex justify-center mt-10">
+          <Button onClick={onBack} variant="ghost" className='flex sm:hidden border-2 border-blue-900 text-white'>
+            &larr; Back to Dashboard
+          </Button>
+        </div>
       </div>
 
       {/* Modal for Panel Details */}
@@ -197,7 +210,7 @@ const SolarPanelDashboard: React.FC = () => {
             <h2 className="text-2xl font-bold mb-4">Panel {panels.findIndex(p => p.id === selectedPanel.id) + 1}</h2>
             <div className="flex flex-col items-center mb-6">
                 {getStatusIcon(selectedPanel.status, selectedPanel.isEnabled)}
-                <span className={`mt-2 font-semibold text-xl ${selectedPanel.isEnabled ? 'text-green-400' : 'text-gray-400'}`}>
+                <span className={`mt-8 font-semibold text-xl ${selectedPanel.isEnabled ? 'text-green-400' : 'text-gray-400'}`}>
                     {getStatusText(selectedPanel.status, selectedPanel.isEnabled)}
                 </span>
             </div>
