@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+// import { Electrolize } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -11,6 +12,12 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+// const electrolize = Electrolize({
+//   weight: '400',
+//   subsets: ['latin'],
+//   variable: '--font-electrolize',
+// });
 
 export const metadata: Metadata = {
   title: "MicroGrid Energy Monitor",

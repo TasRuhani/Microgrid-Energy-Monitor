@@ -46,9 +46,8 @@ export default function App() {
   const [isOnline, setIsOnline] = useState(typeof window !== 'undefined' ? navigator.onLine : true);
   const [currentPage, setCurrentPage] = useState('home');
   const [selectedMetric, setSelectedMetric] = useState<{ title: string, value: string, unit: string } | null>(null);
-  const [showLowEnergyWarning, setShowLowEnergyWarning] = useState(false);
+  const [alerts, setAlerts] = useState<string[]>([]);
   const [showConfig, setShowConfig] = useState(false);
-  // const [showConfig, setShowConfig] = useState(typeof window !== 'undefined' ? !navigator.onLine || !localStorage.getItem('esp32Ip') : true);
   const [esp32Ip, setEsp32Ip] = useState(typeof window !== 'undefined' ? localStorage.getItem('esp32Ip') || '' : '');
   const [ssid, setSsid] = useState(typeof window !== 'undefined' ? localStorage.getItem('ssid') || '' : '');
   const [password, setPassword] = useState(typeof window !== 'undefined' ? localStorage.getItem('password') || '' : '');
@@ -122,36 +121,39 @@ export default function App() {
       const lowPfThreshold = 0.75;
       
       const newMetricStatus: MetricStatus = { voltage: 'ok', powerFactor: 'ok', power: 'ok', apparentPower: 'ok', reactivePower: 'ok' };
+      const newAlerts: string[] = [];
       
       if (parseFloat(newPower) < lowEnergyThreshold && parseFloat(newPower) > 0) {
         newMetricStatus.power = 'warning';
+        newAlerts.push('Low energy input detected!');
       }
       
       if (parseFloat(jsonData.voltage) < lowVoltageThreshold || parseFloat(jsonData.voltage) > highVoltageThreshold) {
         newMetricStatus.voltage = 'warning';
+        newAlerts.push('Voltage fluctuation detected. Maintenance may be required.');
       }
       
       if (parseFloat(newPf) < lowPfThreshold) {
         newMetricStatus.powerFactor = 'warning';
+        newAlerts.push('Low power factor detected. Check for faulty loads or motors.');
       }
       
-      // I've also added a check for apparent power, a large difference between
-      // apparent and real power could indicate an issue.
       if (parseFloat(newApparentPower) > (parseFloat(newPower) * 1.5)) {
         newMetricStatus.apparentPower = 'warning';
+        newAlerts.push('Large difference between real and apparent power detected. This may indicate a problem.');
       }
       
-      // Similarly for reactive power, high values indicate a poor power factor
       if (parseFloat(newReactivePower) > 100) {
         newMetricStatus.reactivePower = 'warning';
+        newAlerts.push('High reactive power detected. This can lead to increased energy costs and grid instability.');
       }
       
       setMetricStatus(newMetricStatus);
-      setShowLowEnergyWarning(newMetricStatus.power === 'warning');
+      setAlerts(newAlerts);
 
     } catch (error) {
       console.error("Could not fetch data:", error);
-      setShowLowEnergyWarning(false);
+      setAlerts(['Connection failed. Check IP address and Wi-Fi.']);
       setResetStatus('Connection failed. Check IP address and Wi-Fi.');
       setTimeout(() => setResetStatus(''), 5000);
       setMetricStatus({ voltage: 'warning', powerFactor: 'warning', power: 'warning', apparentPower: 'warning', reactivePower: 'warning' });
@@ -246,15 +248,15 @@ export default function App() {
     <div className="min-h-screen text-white p-4 font-sans">
       <div className="container mx-auto max-w-4xl py-8">
         <div className="cursor-pointer" onClick={() => setCurrentPage('home')}>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mt-8 mb-14 text-blue-400 font-michroma">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mt-8 mb-14 text-white modern-heading">
             Renewable Energy Monitor
           </h1>
         </div>
-        {showLowEnergyWarning && (
-          <div className="bg-red-600 text-white p-3 rounded-lg text-center mb-6 font-medium animate-pulse">
-            WARNING: Low energy input detected! Check the microgrid for inefficiencies.
+        {alerts.length > 0 && alerts.map((alert, index) => (
+          <div key={index} className="bg-red-600 text-white p-3 rounded-lg text-center mb-6 font-medium animate-pulse">
+            WARNING: {alert}
           </div>
-        )}
+        ))}
         {!isOnline && (
           <div className="bg-yellow-500 text-yellow-900 p-3 rounded-lg text-center mb-6 font-medium">
             You are currently offline. Displaying cached data.

@@ -6,7 +6,7 @@ export const Button = ({ children, onClick, className, variant = 'default' }: { 
   let variantClasses = '';
   switch (variant) {
     case 'primary':
-      variantClasses = 'bg-blue-800 hover:bg-blue-900 focus:ring-blue-700';
+      variantClasses = 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-700';
       break;
     case 'destructive':
       variantClasses = 'bg-red-600 hover:bg-red-700 focus:ring-red-500';

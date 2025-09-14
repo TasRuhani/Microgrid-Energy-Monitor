@@ -20,6 +20,15 @@ export const getDummyData = (metric: string, days: number = 7) => {
       case 'Power Factor':
         value = (Math.random() * 0.3) + 0.7;
         break;
+      case 'Apparent Power':
+        value = (Math.random() * 600) + 200;
+        break;
+      case 'Reactive Power':
+        value = (Math.random() * 200) + 50;
+        break;
+      case 'Efficiency':
+        value = (Math.random() * 10) + 85;
+        break;
       default:
         value = 0;
     }
@@ -31,9 +40,9 @@ export const getDummyData = (metric: string, days: number = 7) => {
   return data;
 };
 
-export const getDummyAverageData = (metric: string, data: { name: string, value: number }[]) => {
+export const getDummyAverageData = (data: { name: string, value: number }[]) => {
   const averageData = [];
-  const movingAveragePeriod = 1;
+  const movingAveragePeriod = 2; // For a smoother dummy average over 2 days
 
   for (let i = 0; i < data.length; i++) {
     const start = Math.max(0, i - movingAveragePeriod);

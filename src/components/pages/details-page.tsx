@@ -45,7 +45,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 export const DetailsPage = ({ metric, onBack, dateRange, setDateRange }: DetailsPageProps) => {
   const days = dateRange === '7d' ? 7 : 30;
   const graphData = getDummyData(metric.title, days);
-  const averageData = getDummyAverageData(metric.title, graphData);
+  const averageData = getDummyAverageData(graphData);
 
   const combinedData = graphData.map((d, i) => ({
     ...d,
@@ -56,7 +56,7 @@ export const DetailsPage = ({ metric, onBack, dateRange, setDateRange }: Details
   return (
     <div className="flex flex-col items-center">
       <div className="w-full flex justify-start mb-6">
-        <Button onClick={onBack} variant="ghost">
+        <Button onClick={onBack} variant="ghost" className='hidden sm:flex border-2 border-blue-900 text-white'>
           &larr; Back to Dashboard
         </Button>
       </div>
@@ -91,8 +91,8 @@ export const DetailsPage = ({ metric, onBack, dateRange, setDateRange }: Details
           </ResponsiveContainer>
         </div>
       </Card>
-      <div className="w-full sm:hidden flex justify-center py-6">
-        <Button onClick={onBack} variant="primary">
+      <div className="w-full sm:hidden flex justify-center py-10">
+        <Button onClick={onBack} variant="ghost" className='border-2 border-blue-800 text-white'>
           &larr; Back to Dashboard
         </Button>
       </div>

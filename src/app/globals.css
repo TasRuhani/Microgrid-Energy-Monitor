@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Electrolize&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -112,12 +113,18 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+.modern-heading {
+  font-family: 'Electrolize', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8)), url('/bg.jpg');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/image.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
