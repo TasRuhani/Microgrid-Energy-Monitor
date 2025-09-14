@@ -54,7 +54,9 @@ export default function App() {
   const [password, setPassword] = useState(typeof window !== 'undefined' ? localStorage.getItem('password') || '' : '');
   const [dateRange, setDateRange] = useState('7d');
 
-  const getBaseUrl = () => `http://${esp32Ip}`;
+const getBaseUrl = useCallback(() => {
+    return `http://${esp32Ip}`;
+}, [esp32Ip]);
 
   const registerServiceWorker = () => {
     if ('serviceWorker' in navigator) {
@@ -166,7 +168,7 @@ export default function App() {
       setTimeout(() => setResetStatus(''), 5000);
       setMetricStatus({ voltage: 'ok', powerFactor: 'ok', power: 'ok', apparentPower: 'ok', reactivePower: 'ok' });
     }
-  }, [isOnline, esp32Ip]);
+  }, [isOnline, esp32Ip, getBaseUrl]);
 
   useEffect(() => {
     if (!showConfig) {
@@ -259,7 +261,7 @@ export default function App() {
     <div className="min-h-screen text-white p-4 font-sans">
       <div className="container mx-auto max-w-4xl py-8">
         <div className="cursor-pointer" onClick={() => setCurrentPage('home')}>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mt-8 mb-14 text-blue-400 modern-heading">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mt-8 mb-14 text-white modern-heading">
             MicroGrid Energy Monitor
           </h1>
         </div>
