@@ -90,7 +90,7 @@ export const HomePage = ({ data, metricStatus, onCardClick, onResetEnergy, reset
         </Card>
       </div>
     </div>
-    <div className="text-center mt-8">
+    <div className="text-center mt-14">
       <Button onClick={onResetEnergy} variant="destructive">
         Reset Energy Counter
       </Button>

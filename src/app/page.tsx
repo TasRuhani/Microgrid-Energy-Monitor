@@ -47,7 +47,8 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [selectedMetric, setSelectedMetric] = useState<{ title: string, value: string, unit: string } | null>(null);
   const [alerts, setAlerts] = useState<string[]>([]);
-  const [showConfig, setShowConfig] = useState(false);
+  // const [showConfig, setShowConfig] = useState(false);
+  const [showConfig, setShowConfig] = useState(typeof window !== 'undefined' ? !navigator.onLine || !localStorage.getItem('esp32Ip') : true);
   const [esp32Ip, setEsp32Ip] = useState(typeof window !== 'undefined' ? localStorage.getItem('esp32Ip') || '' : '');
   const [ssid, setSsid] = useState(typeof window !== 'undefined' ? localStorage.getItem('ssid') || '' : '');
   const [password, setPassword] = useState(typeof window !== 'undefined' ? localStorage.getItem('password') || '' : '');
@@ -89,7 +90,14 @@ export default function App() {
   }, []);
 
   const fetchData = useCallback(async () => {
-    if (!isOnline || !esp32Ip) return;
+    if (!isOnline || !esp32Ip) {
+      setAlerts(['Connection failed. Check IP address and Wi-Fi.']);
+      setResetStatus('Connection failed. Check IP address and Wi-Fi.');
+      setTimeout(() => setResetStatus(''), 5000);
+      setMetricStatus({ voltage: 'ok', powerFactor: 'ok', power: 'ok', apparentPower: 'ok', reactivePower: 'ok' });
+      return;
+    }
+    
     try {
       const response = await fetch(`${getBaseUrl()}/data`);
       if (!response.ok) {
@@ -156,15 +164,17 @@ export default function App() {
       setAlerts(['Connection failed. Check IP address and Wi-Fi.']);
       setResetStatus('Connection failed. Check IP address and Wi-Fi.');
       setTimeout(() => setResetStatus(''), 5000);
-      setMetricStatus({ voltage: 'warning', powerFactor: 'warning', power: 'warning', apparentPower: 'warning', reactivePower: 'warning' });
+      setMetricStatus({ voltage: 'ok', powerFactor: 'ok', power: 'ok', apparentPower: 'ok', reactivePower: 'ok' });
     }
   }, [isOnline, esp32Ip]);
 
   useEffect(() => {
-    fetchData();
-    const interval = setInterval(fetchData, 2000);
-    return () => clearInterval(interval);
-  }, [fetchData]);
+    if (!showConfig) {
+        fetchData();
+        const interval = setInterval(fetchData, 2000);
+        return () => clearInterval(interval);
+    }
+  }, [fetchData, showConfig]);
 
   const handleResetEnergy = async () => {
     setResetStatus('Resetting...');
@@ -193,6 +203,7 @@ export default function App() {
     localStorage.setItem('ssid', ssid);
     localStorage.setItem('password', password);
     setShowConfig(false);
+    fetchData(); // Trigger initial data fetch after saving settings
   };
 
   const renderCurrentPage = () => {
@@ -248,8 +259,8 @@ export default function App() {
     <div className="min-h-screen text-white p-4 font-sans">
       <div className="container mx-auto max-w-4xl py-8">
         <div className="cursor-pointer" onClick={() => setCurrentPage('home')}>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mt-8 mb-14 text-white modern-heading">
-            Renewable Energy Monitor
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mt-8 mb-14 text-blue-400 modern-heading">
+            MicroGrid Energy Monitor
           </h1>
         </div>
         {alerts.length > 0 && alerts.map((alert, index) => (

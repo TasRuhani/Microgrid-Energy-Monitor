@@ -13,7 +13,7 @@ interface ConfigPageProps {
 }
 
 export const ConfigPage = ({ esp32Ip, setEsp32Ip, ssid, setSsid, password, setPassword, onSave }: ConfigPageProps) => (
-  <Card className="max-w-md mx-auto">
+  <Card className="max-w-md my-20 mx-auto">
     <h2 className="text-xl font-bold mb-4 text-center">Configure ESP32 Connection</h2>
     <div className="mb-4">
       <Label htmlFor="ip">ESP32 IP Address</Label>
