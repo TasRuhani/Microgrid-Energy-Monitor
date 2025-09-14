@@ -54,7 +54,6 @@ export default function App() {
     unit: string;
   } | null>(null);
   const [alerts, setAlerts] = useState<string[]>([]);
-  // const [showConfig, setShowConfig] = useState(false);
   const [showConfig, setShowConfig] = useState(
     typeof window !== "undefined"
       ? !navigator.onLine || !localStorage.getItem("esp32Ip")
@@ -137,11 +136,15 @@ export default function App() {
       const jsonData = await response.json();
       const newPower = parseFloat(jsonData.power).toFixed(1);
       const newEnergy = (parseFloat(jsonData.energy) * 1000).toFixed(0);
-      const newEfficiency = (
-        parseFloat(newEnergy) > 0
-          ? (parseFloat(jsonData.power) / parseFloat(newEnergy)) * 100
-          : 0
-      ).toFixed(2);
+
+      // const newEfficiency = (
+      //   parseFloat(newEnergy) > 0
+      //     ? (parseFloat(jsonData.power) / parseFloat(newEnergy)) * 100
+      //     : 0
+      // ).toFixed(2);
+
+      const newEfficiency = "0.00"; // Hardcoded to 0%
+
       const newPf = parseFloat(jsonData.pf).toFixed(2);
       const newApparentPower = parseFloat(jsonData.apparentPower).toFixed(1);
       const newReactivePower = parseFloat(jsonData.reactivePower).toFixed(1);
